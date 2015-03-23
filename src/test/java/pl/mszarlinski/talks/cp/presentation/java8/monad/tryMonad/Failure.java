@@ -24,7 +24,7 @@ public class Failure<T> implements Try<T> {
     }
 
     @Override
-    public T recoverWith(T o) {
+    public T onFailure(T o) {
         return o;
     }
 }

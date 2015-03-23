@@ -10,12 +10,12 @@ public interface Try<T> {
     // MONAD METHODS
 
     static <T> Try<T> of(T value) {
-        return new Success<T>(value);
+        return new Success<>(value);
     }
     <R> Try<R> flatMap(Function<? super T, ? extends R> f); // reduction of nested Try
 
     // OPERATIONS
 
     T get() throws Throwable; // exit from monad
-    T recoverWith(T o);
+    T onFailure(T o);
 }

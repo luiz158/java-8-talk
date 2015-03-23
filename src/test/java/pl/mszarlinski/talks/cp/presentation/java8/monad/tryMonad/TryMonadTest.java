@@ -1,5 +1,8 @@
 package pl.mszarlinski.talks.cp.presentation.java8.monad.tryMonad;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -8,26 +11,30 @@ import org.junit.Test;
 public class TryMonadTest {
 
     @Test
-    public void test1() throws Exception {
+    public void testFailure() throws Exception {
+        // given
         final Order order = new Order();
+        // when
+        final String message = saveOrderAndGetMessage(order);
+        // then
+        assertEquals("error has occurred", message);
+    }
 
-        final String message = trySaveOrder(order)
+    private String saveOrderAndGetMessage(Order order) {
+        return trySaveOrder(order)
                 .flatMap(id -> "Order successfully saved with id: " + id)
-                .recoverWith("error has occurred");
-
-        System.out.println(message);
+                .onFailure("error has occurred");
     }
 
     @Test
-    public void test2() throws Exception {
+    public void testSuccess() throws Exception {
+        // given
         final Order order = new Order();
         order.orderNumber = "123456";
-
-        final String message = trySaveOrder(order)
-                .flatMap(id -> "Order successfully saved with id: " + id)
-                .recoverWith("error has occurred");
-
-        System.out.println(message);
+        // when
+        final String message = saveOrderAndGetMessage(order);
+        // then
+        assertEquals("Order successfully saved with id: 1", message);
     }
 
     private Long saveOrder(Order order) {
@@ -42,14 +49,16 @@ public class TryMonadTest {
 
     private Try<Long> trySaveOrder(Order order) {
         try {
-            return Try.of(saveOrder(order));
+            return Try.of(saveOrder(order)); // success
         } catch (Exception ex) {
-            return new Failure<Long>(ex);
+            return new Failure<>(ex);        // failure
         }
     }
 
     private class Order {
+
         private long id;
+
         private String orderNumber;
     }
 }
